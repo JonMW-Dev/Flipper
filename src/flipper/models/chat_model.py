@@ -72,7 +72,7 @@ class chatModel(QAbstractListModel):
         response_msg = response.choices[0].message.content
         if response_msg is None:
             raise RuntimeError("Error: no response received")
-        reply_ready.emit({"role": "assistant", "content": response_msg})
+        reply_ready.emit({"role": "assistant", "content": response_msg}) # signal emmited, captured by view slot
             
 
 

@@ -1,0 +1,7 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+  <qresource prefix="/icons">
+    <file alias="Home_dm.svg">icons/Home_dm.svg</file>
+    <file alias="Chat_dm.svg">icons/Chat_dm.svg</file>
+  </qresource>
+</RCC>
