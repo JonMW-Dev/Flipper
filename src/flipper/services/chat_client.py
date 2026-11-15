@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 
 class AIChatController:
     def __init__(self):
-
         #get API key from environment variables
         load_dotenv()
         api_key = os.environ.get("OR_API_KEY")

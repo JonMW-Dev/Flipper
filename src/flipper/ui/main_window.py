@@ -1,13 +1,20 @@
 # creation of my widgets to display
 from PySide6 import QtCore, QtWidgets, QtGui
+from PySide6.QtCore import QThreadPool, Slot, Signal
 from flipper.ui.chat_delegate import ChatDelegate
 from flipper.models.chat_model import chatModel
-from flipper.services.chat_client import AIChatController
 
 SYSTEM_INSTRUCTION = "You are a conversational chatbot"
 class main_widget(QtWidgets.QWidget):
+    message_signal = Signal(dict)
+    
     def __init__(self):
         super().__init__()
+        # setup GUI thread slot for message received signal
+        self.message_signal.connect(self.update_chat)
+
+        # setup QThreadPool for responsive GUI during message send/receive
+        self.threadpool = QThreadPool()
 
         # Setup Model/View for chat
         self.model = chatModel()
@@ -34,8 +41,6 @@ class main_widget(QtWidgets.QWidget):
         """)
         self.model.rowsInserted.connect(lambda: self.list_view.scrollToBottom())
 
-        # Connect AI model 
-        self.AIController = AIChatController()
         #set up text input box
         self.input_textbox = QtWidgets.QLineEdit()
         #set up send button
@@ -51,7 +56,13 @@ class main_widget(QtWidgets.QWidget):
         self.input_textbox.returnPressed.connect(self.send_message)
         self.button.clicked.connect(self.send_message)
 
+
+    @Slot(dict)
+    def update_chat(self, message):
+        self.model.add_message(message)
+
     def send_message(self):
+
         # check that the input box has a message to send
         if len(self.input_textbox.text()) == 0:
             print("Error: There was no message to send.")
@@ -64,19 +75,15 @@ class main_widget(QtWidgets.QWidget):
         #add user message to the data model
         self.model.add_message({"role":"user", "content":user_msg})
 
-        #Construct prompt to AI, include system prompt and chat history
+        # System instruction stays out of the visible list. The pool thread
+        # receives this snapshot and must not touch the model.
         request = [
             {"role":"system", "content": SYSTEM_INSTRUCTION},
             *self.model.messages
         ]
-
-        # send message to the AI
-        response = self.AIController.send_message(request)
-        response_msg = response.choices[0].message.content
-
-        #Add the AI response to the data model
-        print(response_msg)
-        self.model.add_message({"role":"assistant", "content":response_msg})
+        self.threadpool.start(
+            lambda: self.model.request_response(request, self.message_signal)
+        )
 
 
 
