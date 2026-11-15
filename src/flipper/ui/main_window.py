@@ -1,10 +1,10 @@
 # creation of my widgets to display
 from PySide6 import QtCore, QtWidgets, QtGui
-from ChatModel import chatModel
-from ChatDelegate import ChatDelegate
-from services.ChatController import AIChatController
+from flipper.ui.chat_delegate import ChatDelegate
+from flipper.models.chat_model import chatModel
+from flipper.services.chat_client import AIChatController
 
-
+SYSTEM_INSTRUCTION = "You are a conversational chatbot"
 class main_widget(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
@@ -35,7 +35,7 @@ class main_widget(QtWidgets.QWidget):
         self.model.rowsInserted.connect(lambda: self.list_view.scrollToBottom())
 
         # Connect AI model 
-        self.AIController = AIChatController(self.model)
+        self.AIController = AIChatController()
         #set up text input box
         self.input_textbox = QtWidgets.QLineEdit()
         #set up send button
@@ -52,18 +52,31 @@ class main_widget(QtWidgets.QWidget):
         self.button.clicked.connect(self.send_message)
 
     def send_message(self):
+        # check that the input box has a message to send
         if len(self.input_textbox.text()) == 0:
             print("Error: There was no message to send.")
             return
+
+        # store the message to send and clear input box
         user_msg = self.input_textbox.text()
         self.input_textbox.clear()
 
+        #add user message to the data model
         self.model.add_message({"role":"user", "content":user_msg})
 
-        response = self.AIController.send_message(self.model.messages)
+        #Construct prompt to AI, include system prompt and chat history
+        request = [
+            {"role":"system", "content": SYSTEM_INSTRUCTION},
+            *self.model.messages
+        ]
+
+        # send message to the AI
+        response = self.AIController.send_message(request)
         response_msg = response.choices[0].message.content
+
+        #Add the AI response to the data model
         print(response_msg)
-        self.model.add_message({"role":"system", "content":response_msg})
+        self.model.add_message({"role":"assistant", "content":response_msg})
 
 
 

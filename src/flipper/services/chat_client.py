@@ -3,11 +3,10 @@
 import os
 from openai import OpenAI
 from dotenv import load_dotenv
-from ChatModel import chatModel
 
 class AIChatController:
-    def __init__(self, model):
-        self.model = model
+    def __init__(self):
+
         #get API key from environment variables
         load_dotenv()
         api_key = os.environ.get("OR_API_KEY")

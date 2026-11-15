@@ -4,7 +4,7 @@
 # We will initially use this project to learn Qt/Pyside6 for GUI. 
 import sys
 from PySide6 import QtWidgets
-from MainWindow import main_widget
+from flipper.ui.main_window import main_widget
 def main():
     application = QtWidgets.QApplication([])
 
