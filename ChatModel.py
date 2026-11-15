@@ -9,8 +9,7 @@ class chatModel(QAbstractListModel):
         super().__init__()
 
         self.messages: list[dict[str,str]] = [
-            {"role":"user", "content":"Hello"},
-            {"role":"bot",  "content":"Hello user"},    
+            {"role":"system",  "content":"Hello please enter a message"},    
         ]
 
     def rowCount(self, parent=None):
@@ -23,7 +22,7 @@ class chatModel(QAbstractListModel):
         msg = self.messages[index.row()]
         text = msg["content"]
         is_user = msg["role"] == "user"
-        is_ai = msg["role"] == "bot"
+        is_ai = msg["role"] == "system"
 
         if role == Qt.DisplayRole:
         # Show whatever is in the dict

@@ -2,6 +2,7 @@
 from PySide6 import QtCore, QtWidgets, QtGui
 from ChatModel import chatModel
 from ChatDelegate import ChatDelegate
+from services.ChatController import AIChatController
 
 
 class main_widget(QtWidgets.QWidget):
@@ -14,6 +15,7 @@ class main_widget(QtWidgets.QWidget):
         self.list_view.setModel(self.model)
         self.list_view.setItemDelegate(ChatDelegate())
         self.list_view.setAlternatingRowColors(False)
+        self.list_view.setWordWrap(True)
         self.list_view.setStyleSheet("""
             QListView {
                 border: none;
@@ -32,6 +34,8 @@ class main_widget(QtWidgets.QWidget):
         """)
         self.model.rowsInserted.connect(lambda: self.list_view.scrollToBottom())
 
+        # Connect AI model 
+        self.AIController = AIChatController(self.model)
         #set up text input box
         self.input_textbox = QtWidgets.QLineEdit()
         #set up send button
@@ -51,10 +55,16 @@ class main_widget(QtWidgets.QWidget):
         if len(self.input_textbox.text()) == 0:
             print("Error: There was no message to send.")
             return
-
-        self.model.add_message({"role":"user", "content":self.input_textbox.text()})
-
+        user_msg = self.input_textbox.text()
         self.input_textbox.clear()
+
+        self.model.add_message({"role":"user", "content":user_msg})
+
+        response = self.AIController.send_message(self.model.messages)
+        response_msg = response.choices[0].message.content
+        print(response_msg)
+        self.model.add_message({"role":"system", "content":response_msg})
+
 
 
 
