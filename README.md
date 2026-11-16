@@ -1,12 +1,12 @@
 Flipper (name and repo will change) is a study tool that helps the user understand, remember, and recall information. 
 
-# ------------------------------------------------IMPORTANT NOTES-------------------------------------------------------  
+# IMPORTANT NOTES  
   - While the flow of the project is in place and works, it requires additional setup after cloning. (e.g. setting up the database and llm)
   - There are many GUI problems, these are currently low priority.
   - There is currently no backup or exporting of the DB - if something goes wrong, there is no way of getting your questions and answers back
   - The LLM is used via OpenRouter (hard coded) and the api_key must be given in a `.env` file with the variable name `OR_API_KEY`.
 
-# ----------------------------------------------- CURRENT DEVELOPMENT FOCUS---------------------------------------------
+# CURRENT DEVELOPMENT FOCUS
 - Add AI configuration to input an API key, change OpenRouter Base_url, or connect to a local model on the users machine.
 - Reformat to improve structure and consistency in conventions.
 - Deploy-ability and clone-ability. 
