@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>questionView</class>
+ <widget class="QWidget" name="questionView">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="lbl_course">
+     <property name="text">
+      <string>Course Lable (lbl_course)</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_q">
+     <property name="text">
+      <string>Question:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTextEdit" name="text_question"/>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_a">
+     <property name="text">
+      <string>Answer:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTextEdit" name="text_answer"/>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btn_submit">
+     <property name="text">
+      <string>Add to test bank</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

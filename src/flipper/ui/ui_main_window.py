@@ -16,10 +16,10 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QIcon, QImage, QKeySequence, QLinearGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
-from PySide6.QtWidgets import (QApplication, QLabel, QMainWindow, QSizePolicy,
-    QStackedWidget, QStatusBar, QToolBar, QVBoxLayout,
-    QWidget)
-from . import resources_rc
+from PySide6.QtWidgets import (QApplication, QHBoxLayout, QLabel, QMainWindow,
+    QSizePolicy, QStackedWidget, QStatusBar, QToolBar,
+    QVBoxLayout, QWidget)
+from flipper.ui import resources_rc
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -41,10 +41,13 @@ class Ui_MainWindow(object):
         self.actionQuit = QAction(MainWindow)
         self.actionQuit.setObjectName(u"actionQuit")
         self.actionQuit.setMenuRole(QAction.MenuRole.NoRole)
+        self.actionEducation = QAction(MainWindow)
+        self.actionEducation.setObjectName(u"actionEducation")
+        self.actionEducation.setMenuRole(QAction.MenuRole.NoRole)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
-        self.verticalLayout_2 = QVBoxLayout(self.centralwidget)
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.horizontalLayout = QHBoxLayout(self.centralwidget)
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.viewStack = QStackedWidget(self.centralwidget)
         self.viewStack.setObjectName(u"viewStack")
         self.homePage = QWidget()
@@ -67,8 +70,18 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.chatLabel)
 
         self.viewStack.addWidget(self.chatPage)
+        self.eduPage = QWidget()
+        self.eduPage.setObjectName(u"eduPage")
+        self.verticalLayout_2 = QVBoxLayout(self.eduPage)
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.label = QLabel(self.eduPage)
+        self.label.setObjectName(u"label")
 
-        self.verticalLayout_2.addWidget(self.viewStack)
+        self.verticalLayout_2.addWidget(self.label)
+
+        self.viewStack.addWidget(self.eduPage)
+
+        self.horizontalLayout.addWidget(self.viewStack)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QStatusBar(MainWindow)
@@ -82,6 +95,7 @@ class Ui_MainWindow(object):
 
         self.navBar.addAction(self.actionHome)
         self.navBar.addAction(self.actionChat)
+        self.navBar.addAction(self.actionEducation)
         self.navBar.addAction(self.actionQuit)
 
         self.retranslateUi(MainWindow)
@@ -97,8 +111,10 @@ class Ui_MainWindow(object):
         self.actionHome.setText(QCoreApplication.translate("MainWindow", u"Home", None))
         self.actionChat.setText(QCoreApplication.translate("MainWindow", u"Chat", None))
         self.actionQuit.setText(QCoreApplication.translate("MainWindow", u"Quit", None))
+        self.actionEducation.setText(QCoreApplication.translate("MainWindow", u"Education", None))
         self.homeLabel.setText(QCoreApplication.translate("MainWindow", u"Home", None))
         self.chatLabel.setText(QCoreApplication.translate("MainWindow", u"Chat", None))
+        self.label.setText(QCoreApplication.translate("MainWindow", u"education Page", None))
         self.navBar.setWindowTitle(QCoreApplication.translate("MainWindow", u"toolBar", None))
     # retranslateUi
 

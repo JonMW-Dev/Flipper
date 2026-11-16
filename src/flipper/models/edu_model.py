@@ -1,0 +1,67 @@
+from PySide6.QtCore import QAbstractListModel, Qt, QModelIndex
+import PySide6.QtCore
+class eduModel(QAbstractListModel):
+    def __init__(self):
+        super().__init__()
+
+        # Read courses from courselist.txt
+        self.courses = self.read_courselist()
+        #placeholder list
+        # self.courses: list[str]  = [
+        #     "Course 1",
+        #     "Course 2",
+        # ]
+
+    def rowCount(self, parent=None):
+        return len(self.courses)
+
+    def data(self, index, role=Qt.DisplayRole):
+        if not index.isValid():
+            return None
+
+        course = self.courses[index.row()]
+
+        if role == Qt.DisplayRole:
+            return course
+
+    def add_course(self, course_name: str):
+        print(f"Adding Course: {course_name}")
+        row = len(self.courses)
+        self.beginInsertRows(QModelIndex(), row, row) # notify model is changing
+        self.courses.append(course_name)
+        self.endInsertRows() # signal that edits are complete
+        print(f"Updated Course List: {self.courses}")
+        print(f"Updating course list")
+
+        #save list to txt file
+        try:
+            with open("courselist.txt", "w") as fw:
+                for course in self.courses:
+                    fw.write(f"{course}\n")
+
+            fw.close()
+        except:
+            raise Exception("Error: Could not save course list to file")
+
+    def refresh(self):
+        self.beginResetModel()
+        self.courses = self.read_courselist()
+        self.endResetModel()
+
+    def read_courselist(self) -> list[str]:
+        new_courses: list[str] = []
+        try:
+            with open("courselist.txt", "r") as fr:
+                for line in fr:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    new_courses.append(line)
+            fr.close()
+            return new_courses
+        except:
+            raise Exception("Error: unable to read from courselist.txt")
+        
+
+
+    

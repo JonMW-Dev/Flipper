@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_2">
+   <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <widget class="QStackedWidget" name="viewStack">
       <property name="currentIndex">
@@ -37,6 +37,17 @@
          <widget class="QLabel" name="chatLabel">
           <property name="text">
            <string>Chat</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="eduPage">
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>education Page</string>
           </property>
          </widget>
         </item>
@@ -65,6 +76,7 @@
    </attribute>
    <addaction name="actionHome"/>
    <addaction name="actionChat"/>
+   <addaction name="actionEducation"/>
    <addaction name="actionQuit"/>
   </widget>
   <action name="actionHome">
@@ -94,6 +106,14 @@
   <action name="actionQuit">
    <property name="text">
     <string>Quit</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionEducation">
+   <property name="text">
+    <string>Education</string>
    </property>
    <property name="menuRole">
     <enum>QAction::MenuRole::NoRole</enum>
