@@ -48,6 +48,13 @@
      </property>
     </widget>
    </item>
+   <item>
+    <widget class="QPushButton" name="btn_done">
+     <property name="text">
+      <string>Done</string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <resources/>

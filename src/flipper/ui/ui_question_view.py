@@ -55,6 +55,11 @@ class Ui_questionView(object):
 
         self.verticalLayout.addWidget(self.btn_submit)
 
+        self.btn_done = QPushButton(questionView)
+        self.btn_done.setObjectName(u"btn_done")
+
+        self.verticalLayout.addWidget(self.btn_done)
+
 
         self.retranslateUi(questionView)
 
@@ -67,5 +72,6 @@ class Ui_questionView(object):
         self.label_q.setText(QCoreApplication.translate("questionView", u"Question:", None))
         self.label_a.setText(QCoreApplication.translate("questionView", u"Answer:", None))
         self.btn_submit.setText(QCoreApplication.translate("questionView", u"Add to test bank", None))
+        self.btn_done.setText(QCoreApplication.translate("questionView", u"Done", None))
     # retranslateUi
 

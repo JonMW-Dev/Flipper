@@ -1,6 +1,6 @@
 import random
 from PySide6 import QtWidgets, QtCore
-from PySide6.QtCore import QThreadPool
+from PySide6.QtCore import QThreadPool, Qt, QEvent
 from PySide6.QtWidgets import QMessageBox, QButtonGroup
 from flipper.ui.ui_edu_view import Ui_eduView
 from flipper.models.edu_model import eduModel
@@ -71,8 +71,31 @@ class questionView(QtWidgets.QWidget):
         self.ui = Ui_questionView()
         self.ui.setupUi(self)
 
+        #setup EventFilter to allow for easier QnA entry
+        self.ui.text_question.installEventFilter(self)
+        self.ui.text_answer.installEventFilter(self)
+
+        #set Focus to questions textbox
+        self.ui.text_question.setFocus()
+
         #setup submit button
         self.ui.btn_submit.clicked.connect(self.add_question)
+
+        #setup done button
+        self.ui.btn_done.clicked.connect(self.done)
+
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.KeyPress and event.key() in (Qt.Key_Return, Qt.Key_Enter):
+            if obj is self.ui.text_question:
+                self.ui.text_answer.setFocus()
+                return True
+            if obj is self.ui.text_answer:
+                self.add_question()
+                return True
+        return super().eventFilter(obj, event)
+
+            
+
 
     def add_question(self):
         course   = self.ui.lbl_course.text()
@@ -84,6 +107,14 @@ class questionView(QtWidgets.QWidget):
         db_service = TestBank()
         result = db_service.add_question(course, question, answer)
         print(result)
+
+        # clear textboxes
+        self.ui.text_answer.clear()
+        self.ui.text_question.clear()
+
+        self.ui.text_question.setFocus()
+    
+    def done(self):
         self.saved.emit()
 
 class testView(QtWidgets.QWidget):

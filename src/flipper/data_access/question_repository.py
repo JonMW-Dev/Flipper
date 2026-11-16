@@ -29,7 +29,7 @@ class QuestionRepository:
                 )
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """,
-                (course, question, answer, f1, f2, f3, correct, attempts),
+                (course, question, answer, f1, f2, f3, 0, 0),
             )
             row_id = cursor.lastrowid
         if row_id is None:
