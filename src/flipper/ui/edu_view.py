@@ -160,19 +160,42 @@ class testView(QtWidgets.QWidget):
     def submit_answer(self):
         #get string held by answer selected
         selected_answer = self.grp_answers.checkedButton().text()
+        data_tuple = ()
         if selected_answer:
             data_tuple = self.db_service.get_data_byId(self.current_id)
             correct_answer = data_tuple[3]
+
+            if data_tuple[7] == None:
+                data_correct = 0
+            else:
+                data_correct = data_tuple[7]
+
+            if data_tuple[8] == None:
+                data_attempt = 0
+            else:
+                data_attempt = data_tuple[8]
+            
+            
             print(f"Selected Answer: {selected_answer} | Correct Answer: {correct_answer}")
             if selected_answer == correct_answer:
                 self.total_correct_answers += 1
+                
+                data_correct += 1
+                print(f"Updating {self.current_id} correct col with: {data_correct}")
+                self.db_service.add_data(self.current_id, "correct", data_correct)
+
+            # update attempt count
+            data_attempt += 1
+            print(f"Updating {self.current_id} attempts col with: {data_attempt}")
+            self.db_service.add_data(self.current_id, "attempts", data_attempt)
+
 
         #deselect radio buttons
         self.grp_answers.setExclusive(False)
         for button in self.grp_answers.buttons():
             button.setChecked(False)
         self.grp_answers.setExclusive(True)
-        
+
         #check if answer matches that held by current_id
             #if yes increment correct col by 1
         #increment attempt by 1
@@ -204,9 +227,27 @@ class PanelWidget(QtWidgets.QWidget):
         
         #setup thread pool so GUI stays responsive during db validation
         self.threadpool = QThreadPool()
+        self.db_service = TestBank()
+        
+        # add reset score button
+        btn_resetScore = QtWidgets.QPushButton("reset score")
+        btn_resetScore.clicked.connect(self.reset_score)
+        layout.addWidget(btn_resetScore)
+
+        #add overall score label
+        lbl_overallScore = QtWidgets.QLabel()
+        overallScore = str(self.db_service.get_overall_score(self.course_name))
+        
+        if overallScore == "-1":
+            overallScore = "no overall score"
+        else:
+            overallScore = overallScore + "%"
+        
+        lbl_overallScore.setText(f"{overallScore}  | ")
+        layout.addWidget(lbl_overallScore)
 
         # determine percent of valid questions in bank
-        self.db_service = TestBank()
+
         invalid_count = self.db_service.get_invalid_count(self.course_name)
         valid_count = self.db_service.get_total_count(self.course_name)
         
@@ -217,6 +258,9 @@ class PanelWidget(QtWidgets.QWidget):
         
         pcomplete = QtWidgets.QLabel(f"{percent_valid} % valid")
         layout.addWidget(pcomplete)
+        
+
+
         
         #Add a validate DB button
         validate_btn = QtWidgets.QPushButton("validate bank")
@@ -241,6 +285,15 @@ class PanelWidget(QtWidgets.QWidget):
         )
         self.q_view.saved.connect(self.bank_changed)
         self.q_view.show()
+
+    def reset_score(self):
+        valid_list = self.db_service.get_valid_list(self.course_name)
+        for row_id in valid_list:
+            self.db_service.add_data(row_id, "correct", 0)
+            self.db_service.add_data(row_id, "attempts", 0)
+        self.bank_changed.emit() # update the course panels
+
+    
 
     #sends each question and answer pair to the AI to generate f1-3
     def validate_bank(self):
@@ -313,5 +366,10 @@ class PanelWidget(QtWidgets.QWidget):
 
         #create test_view
         self.test_window = testView(valid_questions)
-        self.test_window.test_completed.connect(self.test_window.close)
+        self.test_window.test_completed.connect(self.test_completed)
+        # self.bank_changed.emit()
         self.test_window.show()
+
+    def test_completed(self):
+        self.test_window.close()
+        self.bank_changed.emit()

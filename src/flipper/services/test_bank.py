@@ -15,6 +15,15 @@ class TestBank:
             raise ValueError("A course, question, and answer are required.")
         return self.questions.insert(course, question, answer)
 
+    def add_data(self, row_id: int, column: str, value: int | str):
+        if column not in ["f1", "f2", "f3", "correct", "attempts"]:
+            raise ValueError("Invalid column name provided")
+
+        if column in {"correct", "attempts"} and isinstance(value, str):
+            raise ValueError(f"The column {column} cannot be a string: {value}")
+
+        return self.questions.insert_cell(row_id, column, value)
+
     def get_data_byId(self, row_id: int) -> tuple:
         return self.questions.get(row_id)
 
@@ -60,6 +69,28 @@ class TestBank:
 
     def get_QA_byId(self, id: int) -> tuple[str,str] | None:
         return self.questions.get_QA_byId(id)
+
+    def get_overall_score(self, course: str):
+        # accummulate attempts over each course question
+        total_attempts = 0
+        total_correct  = 0
+        valid_list = self.get_valid_list(course)
+        # for each id in valid list get attempts and correct answer counts
+        for id in valid_list:
+            data_tuple = self.get_data_byId(id)
+            if data_tuple[8] != None and data_tuple[7] != None:
+                total_attempts += data_tuple[8]
+                total_correct  += data_tuple[7]
+            else:
+                return -1
+
+        if total_attempts != 0:
+            return (total_correct/total_attempts)*100
+        else:
+            return -1
+
+        
+
 
     
     
