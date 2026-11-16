@@ -15,6 +15,9 @@ class TestBank:
             raise ValueError("A course, question, and answer are required.")
         return self.questions.insert(course, question, answer)
 
+    def get_data_byId(self, row_id: int) -> tuple:
+        return self.questions.get(row_id)
+
     def add_false_answer(self, id: int, f_id: str, value: str | int):
         return self.questions.insert_cell(id, f_id, value)
 
@@ -39,6 +42,14 @@ class TestBank:
             raise ValueError("A course is required")
 
         return self.questions.invalid_list(course)
+
+    def get_valid_list(self, course: str) -> list[int]:
+        course = course.strip()
+        if not course:
+            raise ValueError("A course is required")
+
+        return self.questions.valid_list(course)
+    
 
     def check_col(self, id: int, column: str) -> bool:
         column = column.strip()

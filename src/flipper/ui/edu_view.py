@@ -1,7 +1,11 @@
+import random
 from PySide6 import QtWidgets, QtCore
+from PySide6.QtCore import QThreadPool
+from PySide6.QtWidgets import QMessageBox, QButtonGroup
 from flipper.ui.ui_edu_view import Ui_eduView
 from flipper.models.edu_model import eduModel
 from flipper.ui.ui_question_view import Ui_questionView
+from flipper.ui.ui_test_view import Ui_testView
 from flipper.services.test_bank import TestBank
 from flipper.services.chat_client import AIChatController
 
@@ -82,23 +86,129 @@ class questionView(QtWidgets.QWidget):
         print(result)
         self.saved.emit()
 
+class testView(QtWidgets.QWidget):
+    test_completed = QtCore.Signal()
+    def __init__(self, questions: list[int]):
+        super().__init__()
+        #setup gui window
+        self.ui = Ui_testView()
+        self.ui.setupUi(self)
+        completed = QtCore.Signal()
+
+        # group radio buttons
+        self.grp_answers = QButtonGroup()
+        self.grp_answers.addButton(self.ui.answer_1)
+        self.grp_answers.addButton(self.ui.answer_2)
+        self.grp_answers.addButton(self.ui.answer_3)
+        self.grp_answers.addButton(self.ui.answer_4)
+
+        #self.completed.connect(self.display_score)
+        self.question_list = questions
+        self.total_q_count = len(self.question_list)
+        print("init total_correct_answers")
+        self.total_correct_answers = 0
+        self.current_id = None
+
+        #connect to db service
+        self.db_service = TestBank()
+
+
+
+        #Display question
+        print(f"Question list from testView: {self.question_list}")
+        if len(self.question_list) > 0:
+            self.display_question(self.question_list.pop())
+        else:
+            #self.completed.emit()
+            print("Test completed")    
+
+        #setup submit button
+        self.ui.btn_submitAnswer.clicked.connect(self.submit_answer)
+
+    # TODO - Display question relies on the format of the DB structure remaining
+    # constant. This function should not have to know the structure of the DB.
+    # This function should request answers for the id, and the testbank service
+    # scrambles them, after asking for the answers from the DAS. 
+
+    def display_question(self, id: int):
+        #set current_id variable to id
+        self.current_id = id
+        #get question data
+        data_tuple = self.db_service.get_data_byId(self.current_id)
+        
+        #display question data on window
+        self.ui.lbl_question.setText(data_tuple[2])
+        answer_choices: list[str] = []
+        answer_choices.append(data_tuple[3])
+        answer_choices.append(data_tuple[4])
+        answer_choices.append(data_tuple[5])
+        answer_choices.append(data_tuple[6])
+
+        # scramble the questions
+        answer_scrambled: list[str] = []
+        while len(answer_choices) != 0:
+            # select a random number between 0 and length of list-1
+            index = random.randint(0, len(answer_choices)-1)
+            answer_scrambled.append(answer_choices.pop(index))
+
+        # display answers into radio buttons
+        self.ui.answer_1.setText(answer_scrambled[0])
+        self.ui.answer_2.setText(answer_scrambled[1])
+        self.ui.answer_3.setText(answer_scrambled[2])
+        self.ui.answer_4.setText(answer_scrambled[3])            
+
+    def submit_answer(self):
+        #get string held by answer selected
+        selected_answer = self.grp_answers.checkedButton().text()
+        if selected_answer:
+            data_tuple = self.db_service.get_data_byId(self.current_id)
+            correct_answer = data_tuple[3]
+            print(f"Selected Answer: {selected_answer} | Correct Answer: {correct_answer}")
+            if selected_answer == correct_answer:
+                self.total_correct_answers += 1
+
+        #deselect radio buttons
+        self.grp_answers.setExclusive(False)
+        for button in self.grp_answers.buttons():
+            button.setChecked(False)
+        self.grp_answers.setExclusive(True)
+        
+        #check if answer matches that held by current_id
+            #if yes increment correct col by 1
+        #increment attempt by 1
+
+        #update the display and end test if no more questions exist
+        if len(self.question_list) > 0:
+            self.display_question(self.question_list.pop())
+        else:
+            self.test_completed.emit()
+            print(f"Correct: {self.total_correct_answers} | Total Questions: {self.total_q_count}")
+            score = (self.total_correct_answers/self.total_q_count) * 100
+            QMessageBox.information(self, "SCORE_PLACEHOLDER", f"Test completed, score: {score}%")
+    
+
+    
 
 
 class PanelWidget(QtWidgets.QWidget):
     bank_changed = QtCore.Signal()
 
     def __init__(self, course: str, parent=None):
+        
         super().__init__(parent)
         layout = QtWidgets.QHBoxLayout(self)
         layout.setContentsMargins(8, 4, 8, 4)
         layout.addWidget(QtWidgets.QLabel(course))
         layout.addStretch()
         self.course_name = course
+        
+        #setup thread pool so GUI stays responsive during db validation
+        self.threadpool = QThreadPool()
 
         # determine percent of valid questions in bank
-        db_service = TestBank()
-        invalid_count = db_service.get_invalid_count(self.course_name)
-        valid_count = db_service.get_total_count(self.course_name)
+        self.db_service = TestBank()
+        invalid_count = self.db_service.get_invalid_count(self.course_name)
+        valid_count = self.db_service.get_total_count(self.course_name)
         
         if valid_count > 0:
             percent_valid: str = str(((valid_count-invalid_count)/valid_count)*100)
@@ -112,6 +222,11 @@ class PanelWidget(QtWidgets.QWidget):
         validate_btn = QtWidgets.QPushButton("validate bank")
         validate_btn.clicked.connect(self.validate_bank)
         layout.addWidget(validate_btn)
+
+        #Add a "take test" button
+        btn_takeTest = QtWidgets.QPushButton("Take Test")
+        btn_takeTest.clicked.connect(self.take_test)
+        layout.addWidget(btn_takeTest)
 
         #Add add questions button
         btn = QtWidgets.QPushButton("Add Questions")
@@ -146,6 +261,15 @@ class PanelWidget(QtWidgets.QWidget):
                 if not check:
                     pending_work.append([id, f])
 
+        self.threadpool.start(
+            lambda: self.fill_missing_answers(pending_work)
+        )
+            
+    # to be called on a new thread - Sends messages to ai and receives responses
+    def fill_missing_answers(self, pending_work):
+        db_service = TestBank()
+        client = AIChatController()
+
         # call the AI to fill in the missing f's
         for task in pending_work:
             #db_id, db_f = next(iter(task.items()))
@@ -153,7 +277,6 @@ class PanelWidget(QtWidgets.QWidget):
             db_f  = task[1]
             #get the question and answer for the id
             qa_tuple = db_service.get_QA_byId(db_id)
-
             #build the prompt
             system_instruction = """
                 You task is to provide the incorrect answer to the question.
@@ -168,10 +291,8 @@ class PanelWidget(QtWidgets.QWidget):
                 {"role": "system", "content": system_instruction},
                 {"role": "user", "content": qa_message}
             ]
-
-            #query the bot for a false answer
-            client = AIChatController()
             response = client.send_message(prompt)
+
             response_msg = response.choices[0].message.content
             if response_msg is None:
                 raise RuntimeError("Error: no response received")
@@ -179,3 +300,18 @@ class PanelWidget(QtWidgets.QWidget):
             #add the false answer to f
             print(f"AI response: {response_msg}")
             db_service.add_false_answer(db_id, db_f, response_msg) 
+        
+        self.bank_changed.emit()
+
+    #opens a test window 
+    def take_test(self):
+
+
+        #collect id's of valid questions for course
+        valid_questions: list[int] = self.db_service.get_valid_list(self.course_name)
+        print(f"List of valid id's: {valid_questions}")
+
+        #create test_view
+        self.test_window = testView(valid_questions)
+        self.test_window.test_completed.connect(self.test_window.close)
+        self.test_window.show()

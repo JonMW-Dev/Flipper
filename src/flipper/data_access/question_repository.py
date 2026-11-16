@@ -106,6 +106,23 @@ class QuestionRepository:
 
         return [row[0] for row in cursor]
 
+    # returns list of valid ids
+    def valid_list(self, course: str) -> list[int]:
+        with sqlite3.connect(self.database) as conn:
+            cursor = conn.execute(
+                """
+                SELECT id 
+                FROM questions
+                WHERE course = ?
+                AND f1 IS NOT (NULL OR f1 = '')
+                AND f2 IS NOT (NULL OR f2 = '')
+                AND f3 IS NOT (NULL OR f3 = '')
+                """,
+                (course,),
+            ).fetchall()
+        return [row[0] for row in cursor]
+    
+
     # Returns a bool depending on value in column
     def check_col(self, row_id: int, column: str) -> bool:
         allowed = {"course", "question", "answer", "f1", "f2", "f3"}
