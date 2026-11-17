@@ -1,11 +1,9 @@
 # Provides the AI prompt and response services to the MainWindow
 
-import os
 from openai import OpenAI, AuthenticationError, APIError
-from dotenv import load_dotenv
 from flipper.services.cfg_svc import ConfigService
 from PySide6 import QtCore
-from PySide6.QtCore import QObject, Signal
+from PySide6.QtCore import QObject
 
 
 class AIChatController(QObject):
