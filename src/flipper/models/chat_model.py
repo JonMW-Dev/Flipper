@@ -1,12 +1,14 @@
 from PySide6.QtCore import QAbstractListModel, Qt, QModelIndex
+from PySide6 import QtCore
 from PySide6.QtGui import QBrush, QColor
-from PySide6.QtWidgets import QMessageBox
+
 from flipper.services.chat_client import AIChatController
 class MessageRoles:
         TextRole = Qt.UserRole + 1
         AiRole = Qt.UserRole + 2
 class chatModel(QAbstractListModel):
     ColorRole = Qt.UserRole + 10
+    failed_message = QtCore.Signal(dict)
     def __init__(self):
         super().__init__()
 
@@ -78,10 +80,11 @@ class chatModel(QAbstractListModel):
         reply_ready.emit({"role": "assistant", "content": response_msg}) # signal emmited, captured by view slot
         
     def remove_lastMessage(self):
-        
+        self.beginInsertRows(QModelIndex(), len(self.messages), len(self.messages))
         removed_msg = self.messages.pop()
-        QMessageBox.information(None, "AI Chat Failed", f"CHAT ERROR - REMOVING MESSAGE: \n\n\"{removed_msg['content']}\"")
-        print(f"removed: {removed_msg}...")
+
+        self.endInsertRows()
+        self.failed_message.emit(removed_msg)
 
 
     def get_message(self):

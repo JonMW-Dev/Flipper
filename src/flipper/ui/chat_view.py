@@ -3,6 +3,7 @@ from PySide6 import QtCore, QtWidgets, QtGui
 from PySide6.QtCore import QThreadPool, Slot, Signal
 from flipper.ui.chat_delegate import ChatDelegate
 from flipper.models.chat_model import chatModel
+from PySide6.QtWidgets import QMessageBox
 
 SYSTEM_INSTRUCTION = "You are a conversational chatbot"
 class ChatWidget(QtWidgets.QWidget):
@@ -18,6 +19,7 @@ class ChatWidget(QtWidgets.QWidget):
 
         # Setup Model/View for chat
         self.model = chatModel()
+        self.model.failed_message.connect(self.display_warning)
         self.list_view = QtWidgets.QListView()
         self.list_view.setModel(self.model)
         self.list_view.setItemDelegate(ChatDelegate())
@@ -56,7 +58,9 @@ class ChatWidget(QtWidgets.QWidget):
         # Set up event listener for the button or quick send (enter)
         self.input_textbox.returnPressed.connect(self.send_message)
         self.button.clicked.connect(self.send_message)
-
+        
+    def display_warning(self, message):
+        QMessageBox.information(None, "AI Chat Failed", f"CHAT ERROR - REMOVING MESSAGE: \n\n\"{message['content']}\"")
 
     @Slot(dict)
     def update_chat(self, message):
