@@ -6,11 +6,6 @@ class eduModel(QAbstractListModel):
 
         # Read courses from courselist.txt
         self.courses = self.read_courselist()
-        #placeholder list
-        # self.courses: list[str]  = [
-        #     "Course 1",
-        #     "Course 2",
-        # ]
 
     def rowCount(self, parent=None):
         return len(self.courses)
@@ -51,7 +46,7 @@ class eduModel(QAbstractListModel):
     def read_courselist(self) -> list[str]:
         new_courses: list[str] = []
         try:
-            with open("courselist.txt", "r") as fr:
+            with open("data/courselist.txt", "r") as fr:
                 for line in fr:
                     line = line.strip()
                     if not line:
@@ -60,7 +55,8 @@ class eduModel(QAbstractListModel):
             fr.close()
             return new_courses
         except:
-            raise Exception("Error: unable to read from courselist.txt")
+            raise OSError("Error opening course_list.txt")
+        
         
 
 
