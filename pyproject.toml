@@ -27,3 +27,11 @@ typeCheckingMode = "basic"
 venvPath = "."
 venv = ".venv"
 pythonVersion = "3.13"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
