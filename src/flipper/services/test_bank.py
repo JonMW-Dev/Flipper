@@ -2,8 +2,6 @@ from flipper.data_access.question_repository import QuestionRepository
 
 
 class TestBank:
-    """Saves a question for a course. The window calls this, not the database."""
-
     def __init__(self, questions: QuestionRepository | None = None):
         self.questions = questions if questions is not None else QuestionRepository()
 
@@ -81,8 +79,11 @@ class TestBank:
             if data_tuple[8] != None and data_tuple[7] != None:
                 total_attempts += data_tuple[8]
                 total_correct  += data_tuple[7]
-            else:
-                return -1
+            if data_tuple[8] == None:
+                total_attempts = 0
+            if data_tuple[7] == None:
+                total_correct = 0
+        
 
         if total_attempts != 0:
             return (total_correct/total_attempts)*100
