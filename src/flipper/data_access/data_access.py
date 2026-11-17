@@ -35,7 +35,7 @@ class DataAccessService:
         return row_id
     
     def insert_cell(self, id: int, col: str, value: str | int):
-        allowlist = ['f1', 'f2', 'f3', 'correct', 'attempt']
+        allowlist = ['f1', 'f2', 'f3', 'correct', 'attempts']
         if col not in allowlist:
             raise ValueError(f"DAS: provided column value, {col}, is not valid")
 
