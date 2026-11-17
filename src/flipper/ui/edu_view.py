@@ -66,7 +66,7 @@ class CourseRowDelegate(QtWidgets.QStyledItemDelegate):
     def sizeHint(self, option, index):
         return QtCore.QSize(200, 48)
 
-class questionView(QtWidgets.QWidget):
+class QuestionView(QtWidgets.QWidget):
     saved = QtCore.Signal()
 
     def __init__(self):
@@ -314,7 +314,7 @@ class PanelWidget(QtWidgets.QWidget):
 
     def add_questions(self):
         #Open new window
-        self.q_view = questionView()
+        self.q_view = QuestionView()
         self.q_view.ui.lbl_course.setText(
             f"{self.course_name}"
         )
