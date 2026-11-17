@@ -43,7 +43,7 @@ class TestBank:
         return self.questions.total_count(course)
 
     
-    def get_invalid_list(self, course: str) -> int:
+    def get_invalid_list(self, course: str) -> list[int]:
         course = course.strip()
         if not course: 
             raise ValueError("A course is required")

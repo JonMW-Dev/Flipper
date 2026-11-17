@@ -18,8 +18,6 @@ class QuestionRepository:
         f1: str | None = None,
         f2: str | None = None,
         f3: str | None = None,
-        correct: int | None = None,
-        attempts: int | None = None,
     ) -> int:
         with sqlite3.connect(self.database) as conn:
             cursor = conn.execute(
@@ -37,6 +35,10 @@ class QuestionRepository:
         return row_id
     
     def insert_cell(self, id: int, col: str, value: str | int)-> int:
+        allowlist = ['f1', 'f2', 'f3', 'correct', 'attempt']
+        if col not in allowlist:
+            raise ValueError(f"DAS: provided column value, {col}, is not valid")
+
         with sqlite3.connect(self.database) as conn:
             cursor = conn.execute(
                 f"""
