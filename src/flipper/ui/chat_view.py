@@ -50,10 +50,10 @@ class ChatView(QtWidgets.QWidget):
         self.button = QtWidgets.QPushButton("send")
 
         # Define the layout of the main widget
-        self.layout = QtWidgets.QVBoxLayout(self)
-        self.layout.addWidget(self.list_view)
-        self.layout.addWidget(self.input_textbox)
-        self.layout.addWidget(self.button)
+        layout = QtWidgets.QVBoxLayout(self)
+        layout.addWidget(self.list_view)
+        layout.addWidget(self.input_textbox)
+        layout.addWidget(self.button)
 
         # Set up event listener for the button or quick send (enter)
         self.input_textbox.returnPressed.connect(self.send_message)

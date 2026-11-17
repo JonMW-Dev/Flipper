@@ -10,13 +10,14 @@ class EduModel(QAbstractListModel):
     def rowCount(self, parent=None):
         return len(self.courses)
 
-    def data(self, index, role=Qt.DisplayRole):
+    def data(self, index, role=Qt.ItemDataRole.DisplayRole):
         if not index.isValid():
-            return None
+            raise IndexError(f"Invalid index provided {index}")
+        
 
         course = self.courses[index.row()]
 
-        if role == Qt.DisplayRole:
+        if role == Qt.ItemDataRole.DisplayRole:
             return course
 
     def add_course(self, course_name: str):

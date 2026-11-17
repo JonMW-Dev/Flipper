@@ -1,8 +1,8 @@
 from PySide6 import QtWidgets, QtCore
 from flipper.ui.ui_config_view import Ui_ConfigView
-from flipper.ui.chat_view import ChatWidget
-from flipper.ui.edu_view import eduView
-from src.flipper.services.config_service import ConfigService
+from flipper.ui.chat_view import ChatView
+from flipper.ui.edu_view import EduView
+from flipper.services.config_service import ConfigService
 
 class ConfigView(QtWidgets.QWidget):
     updated = QtCore.Signal()

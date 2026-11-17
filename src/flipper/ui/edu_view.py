@@ -1,3 +1,4 @@
+import grp
 import random
 from PySide6 import QtWidgets, QtCore
 from PySide6.QtCore import QThreadPool, Qt, QEvent
@@ -7,7 +8,7 @@ from flipper.models.edu_model import EduModel
 from flipper.ui.ui_question_view import Ui_questionView
 from flipper.ui.ui_test_view import Ui_testView
 from flipper.services.test_bank import TestBank
-from flipper.services.chat_client import AIChatController
+from flipper.services.chat_client import ChatClient
 
 
 class EduView(QtWidgets.QWidget):
@@ -48,8 +49,10 @@ class EduView(QtWidgets.QWidget):
     def attach_row(self, row: int):
         index = self.model.index(row, 0)
         course = self.model.data(index)
-        widget = PanelWidget(course)
-        # singleShot returns first, so the model resets after the row signal finishes.
+        if course != None:
+            widget = PanelWidget(course)
+
+
         widget.bank_changed.connect(self.schedule_refresh)
         widget.validation_failed.connect(self.show_validation_error)
         self.ui.w_list_courseList.setIndexWidget(index, widget)
@@ -88,7 +91,7 @@ class QuestionView(QtWidgets.QWidget):
         self.ui.btn_done.clicked.connect(self.done)
 
     def eventFilter(self, obj, event):
-        if event.type() == QEvent.KeyPress and event.key() in (Qt.Key_Return, Qt.Key_Enter):
+        if event.type() == QEvent.Type.KeyPress and event.key() in (Qt.Key.Key_Return, Qt.Key.Key_Enter):
             if obj is self.ui.text_question:
                 self.ui.text_answer.setFocus()
                 return True
@@ -168,9 +171,12 @@ class TestView(QtWidgets.QWidget):
         #set current_id variable to id
         self.current_id = id
         #get question data
-        data_tuple = self.db_service.get_data_byId(self.current_id)
+        data_tuple = self.db_service.get_row(self.current_id)
         
         #display question data on window
+        if data_tuple is None:
+            raise RuntimeError(f"Error: no data found for id {self.current_id}")
+        
         self.ui.lbl_question.setText(data_tuple[2])
         answer_choices: list[str] = []
         answer_choices.append(data_tuple[3])
@@ -193,10 +199,19 @@ class TestView(QtWidgets.QWidget):
 
     def submit_answer(self):
         #get string held by answer selected
-        selected_answer = self.grp_answers.checkedButton().text()
+        checked_button = self.grp_answers.checkedButton()
+        if checked_button is None:
+            QMessageBox.warning(self, "No answer selected", "Please select an answer before submitting.")
+            return
+        
+        selected_answer = checked_button.text()
+
         data_tuple = ()
-        if selected_answer:
-            data_tuple = self.db_service.get_data_byId(self.current_id)
+        if selected_answer and self.current_id:
+            data_tuple = self.db_service.get_row(self.current_id)
+            if data_tuple is None:
+                raise RuntimeError(f"Error: no data found for id {self.current_id}")
+            
             correct_answer = data_tuple[3]
 
             if data_tuple[7] == None:
@@ -341,22 +356,22 @@ class PanelWidget(QtWidgets.QWidget):
         # get list of invalid db entries
         invalid_list = db_service.get_invalid_list(self.course_name)
 
-        pending_work: list[list[int,str]] = []
+        pending_work: list[tuple[int , str]] = []
         # for each invalid entry id, find each missing f and add to work list
         for id in invalid_list:
             for f in f_answer:
                 check = db_service.check_col(id, f)
                 if not check:
-                    pending_work.append([id, f])
+                    pending_work.append((id, f))
 
         self.threadpool.start(
             lambda: self.fill_missing_answers(pending_work)
         )
             
     # to be called on a new thread - Sends messages to ai and receives responses
-    def fill_missing_answers(self, pending_work):
+    def fill_missing_answers(self, pending_work: list[tuple[int, str]]):
         db_service = TestBank()
-        client = AIChatController()
+        client = ChatClient()
 
         # call the AI to fill in the missing f's
         for task in pending_work:
@@ -364,7 +379,10 @@ class PanelWidget(QtWidgets.QWidget):
             db_id = task[0]
             db_f  = task[1]
             #get the question and answer for the id
-            qa_tuple = db_service.get_QA_byId(db_id)
+            qa_tuple = db_service.get_question_answer(db_id)
+            if qa_tuple is None:
+                self.validation_failed.emit(f"Error: no question/answer found for id {db_id}")
+                break
             #build the prompt
             system_instruction = """
                 You task is to provide the incorrect answer to the question.

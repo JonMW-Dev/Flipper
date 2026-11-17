@@ -4,10 +4,10 @@ from PySide6.QtGui import QBrush, QColor
 
 from flipper.services.chat_client import ChatClient
 class MessageRoles:
-        TextRole = Qt.UserRole + 1
-        AiRole = Qt.UserRole + 2
+        TextRole = Qt.ItemDataRole.UserRole + 1
+        AiRole = Qt.ItemDataRole.UserRole + 2
 class ChatModel(QAbstractListModel):
-    ColorRole = Qt.UserRole + 10
+    ColorRole = Qt.ItemDataRole.UserRole + 10
     failed_message = QtCore.Signal(dict)
     def __init__(self):
         super().__init__()
@@ -20,7 +20,7 @@ class ChatModel(QAbstractListModel):
     def rowCount(self, parent=None):
         return len(self.messages)
     
-    def data(self, index, role=Qt.DisplayRole):
+    def data(self, index, role=Qt.ItemDataRole.DisplayRole):
         if not index.isValid():
             return None
         
@@ -29,7 +29,7 @@ class ChatModel(QAbstractListModel):
         is_user = msg["role"] == "user"
         is_ai = msg["role"] == "assistant"
 
-        if role == Qt.DisplayRole:
+        if role == Qt.ItemDataRole.DisplayRole:
         # Show whatever is in the dict
             if is_user:
                 return text
@@ -44,11 +44,11 @@ class ChatModel(QAbstractListModel):
         #      return msg["AI"]
 
         # Alignment
-        if role == Qt.TextAlignmentRole:
+        if role == Qt.ItemDataRole.TextAlignmentRole:
             if is_user:
-                return Qt.AlignRight
+                return Qt.AlignmentFlag.AlignRight
             if is_ai:
-                return Qt.AlignLeft
+                return Qt.AlignmentFlag.AlignLeft
 
         # ChatDelegate reads this. Leave every other role as None.
         if role == self.ColorRole:
@@ -56,7 +56,7 @@ class ChatModel(QAbstractListModel):
                 return QColor("#7ae582")
             return QColor("#25a18e")
 
-        if role == Qt.ForegroundRole:
+        if role == Qt.ItemDataRole.ForegroundRole:
             return QColor("#000000")
         
 

@@ -34,7 +34,7 @@ class QuestionRepository:
             raise RuntimeError("Insert did not return an id.")
         return row_id
     
-    def insert_cell(self, id: int, col: str, value: str | int)-> int:
+    def insert_cell(self, id: int, col: str, value: str | int):
         allowlist = ['f1', 'f2', 'f3', 'correct', 'attempt']
         if col not in allowlist:
             raise ValueError(f"DAS: provided column value, {col}, is not valid")
@@ -145,7 +145,7 @@ class QuestionRepository:
             return False
         return bool(row[0])
 
-    def get_QA_byId(self, id: int) -> tuple[str,str] | None:
+    def get_question_answer(self, id: int) -> tuple[str,str] | None:
         with sqlite3.connect(self.database) as conn:
             row = conn.execute(
                 """

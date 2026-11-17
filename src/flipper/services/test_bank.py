@@ -22,7 +22,7 @@ class TestBank:
 
         return self.questions.insert_cell(row_id, column, value)
 
-    def get_data_byId(self, row_id: int) -> tuple:
+    def get_row(self, row_id: int) -> tuple | None:
         return self.questions.get(row_id)
 
     def add_false_answer(self, id: int, f_id: str, value: str | int):
@@ -65,8 +65,8 @@ class TestBank:
 
         return self.questions.check_col(id, column)
 
-    def get_QA_byId(self, id: int) -> tuple[str,str] | None:
-        return self.questions.get_QA_byId(id)
+    def get_question_answer(self, id: int) -> tuple[str,str] | None:
+        return self.questions.get_question_answer(id)
 
     def get_overall_score(self, course: str):
         # accummulate attempts over each course question
@@ -75,7 +75,9 @@ class TestBank:
         valid_list = self.get_valid_list(course)
         # for each id in valid list get attempts and correct answer counts
         for id in valid_list:
-            data_tuple = self.get_data_byId(id)
+            data_tuple = self.get_row(id) 
+            if data_tuple == None:
+                return -1
             if data_tuple[8] != None and data_tuple[7] != None:
                 total_attempts += data_tuple[8]
                 total_correct  += data_tuple[7]

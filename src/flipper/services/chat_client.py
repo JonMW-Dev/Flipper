@@ -1,9 +1,11 @@
 # Provides the AI prompt and response services to the MainWindow
 
 from openai import OpenAI, AuthenticationError, APIError
-from src.flipper.services.config_service import ConfigService
+from openai.types.chat import ChatCompletionMessageParam
+from flipper.services.config_service import ConfigService
 from PySide6 import QtCore
 from PySide6.QtCore import QObject
+from typing import cast
 
 
 class ChatClient(QObject):
@@ -24,11 +26,16 @@ class ChatClient(QObject):
             api_key =self.api_key,
         )
 
-    def send_message(self, messages: list[dict[str,str]]):
-        try: 
+    def send_message(self, messages: list[dict[str, str]]):
+        try:
+            typed_messages = cast(list[ChatCompletionMessageParam], messages)
+            if not self.api_key or not self.url or not self.model:
+                # fall through to raise an error
+                raise RuntimeError("Missing API key, base URL, or model configuration")
+            
             return self.AI_client.chat.completions.create(
                 model = self.model,
-                messages=messages,
+                messages=typed_messages,
             )
         except AuthenticationError:
             self.failed.emit()

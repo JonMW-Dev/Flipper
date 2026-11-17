@@ -36,7 +36,7 @@ class ConfigService(QObject):
         except (json.JSONDecodeError, OSError, ValueError) as e:
             # log the problem, fall back to defaults
             print(f"Config Service: Failed to load settings: {e}")
-            return -1
+            return CONFIG_DEFAULTS
 
     def save_settings(self, configuration: dict)->int:
         try:
