@@ -6,7 +6,7 @@ from PySide6 import QtCore
 from PySide6.QtCore import QObject
 
 
-class AIChatController(QObject):
+class ChatClient(QObject):
     api_key = None
     url     = None
     model   = None

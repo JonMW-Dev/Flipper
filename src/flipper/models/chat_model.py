@@ -2,7 +2,7 @@ from PySide6.QtCore import QAbstractListModel, Qt, QModelIndex
 from PySide6 import QtCore
 from PySide6.QtGui import QBrush, QColor
 
-from flipper.services.chat_client import AIChatController
+from flipper.services.chat_client import ChatClient
 class MessageRoles:
         TextRole = Qt.UserRole + 1
         AiRole = Qt.UserRole + 2
@@ -71,7 +71,7 @@ class ChatModel(QAbstractListModel):
 
     # Runs on a pool thread. Emit the reply; the window adds it on the GUI thread.
     def request_response(self, messages, reply_ready):
-        AI_service = AIChatController()
+        AI_service = ChatClient()
         AI_service.failed.connect(self.remove_lastMessage)
         response = AI_service.send_message(messages)
         response_msg = response.choices[0].message.content
