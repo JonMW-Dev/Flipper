@@ -13,50 +13,50 @@ class ConfigService(QObject):
         # load config
         # Setup AI configuration files
         self.saved.connect(self.refresh_config)
-        print("Checking for flipper_config.json")
+        print("Config Service: Checking for flipper_config.json")
         self.config_dir = Path(user_config_dir(APP_NAME, APP_AUTHOR))
-        print(f"Loading config from: {self.config_dir}")
+        print(f"Config Service: Loading config from: {self.config_dir}")
         self.config_file = self.config_dir / "flipper_config.json"
         self.loaded_config = self.load_settings(self.config_dir, self.config_file)
         if self.loaded_config == -1:
             exit(1)
-        print(f"Config accessible at: {self.config_file}")
-        print(self.loaded_config)
+        print(f"Config Service: Config accessible at: {self.config_file}")
+        
 
     def load_settings(self, config_dir, config_file) -> dict:
         try:
             if not config_file.exists() or config_file.stat().st_size == 0:
-                print("config file not found or is empty.. creating default config")
+                print("Config Service: config file not found or is empty.. creating default config")
                 config_dir.mkdir(parents=True, exist_ok=True)
                 config_file.write_text(json.dumps(CONFIG_DEFAULTS, indent = 2))
             data = json.loads(config_file.read_text())
             if not isinstance(data, dict):
-                raise ValueError("settings file is not an object")
+                raise ValueError("Config Service: settings file is not an object")
             # start from defaults, overlay only known keys (or do a deeper merge)
             return {**CONFIG_DEFAULTS, **data}
         except (json.JSONDecodeError, OSError, ValueError) as e:
             # log the problem, fall back to defaults
-            print(f"Failed to load settings: {e}")
+            print(f"Config Service: Failed to load settings: {e}")
             return -1
 
     def save_settings(self, configuration: dict)->int:
         try:
             if not self.config_file.exists():
-                raise FileNotFoundError("Could not save, file not found.. restart application")
+                raise FileNotFoundError("Config Service: Could not save, file not found.. restart application")
             self.config_file.write_text(json.dumps(configuration, indent = 2))
 
         except (json.JSONDecodeError, OSError, ValueError) as e:
             # log the problem, fall back to defaults
-            print(f"Failed to save settings: {e}")
+            print(f"Config Service: Failed to save settings: {e}")
             return -1
 
         self.saved.emit()
         return 0
 
     def refresh_config(self):
-        print("refreshing loaded configuration")
+        print("Config Service: refreshing loaded configuration")
         self.loaded_config = self.load_settings(self.config_dir, self.config_file)
-        print(f"Loaded configuration: \n{self.loaded_config}")
+        print(f"Config Service: configuration updated at {self.config_file}")
 
     def get_config(self) -> dict:
         return self.loaded_config
