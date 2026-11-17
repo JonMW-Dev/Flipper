@@ -1,6 +1,6 @@
 from PySide6 import QtWidgets, QtCore
 from flipper.ui.ui_main_window import Ui_MainWindow
-from flipper.ui.chat_view import ChatWidget
+from flipper.ui.chat_view import ChatView
 from flipper.ui.edu_view import eduView
 from flipper.ui.config_view import ConfigView
 
@@ -28,7 +28,7 @@ class MainWindow(QtWidgets.QMainWindow):
         
 
         # Add the chat view
-        self.chat_view = ChatWidget()
+        self.chat_view = ChatView()
         self.ui.chatLabel.hide()
         self.ui.verticalLayout.addWidget(self.chat_view)
         

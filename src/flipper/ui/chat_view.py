@@ -6,7 +6,7 @@ from flipper.models.chat_model import ChatModel
 from PySide6.QtWidgets import QMessageBox
 
 SYSTEM_INSTRUCTION = "You are a conversational chatbot"
-class ChatWidget(QtWidgets.QWidget):
+class ChatView(QtWidgets.QWidget):
     message_signal = Signal(dict)
     
     def __init__(self):
