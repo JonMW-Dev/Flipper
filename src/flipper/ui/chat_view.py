@@ -2,7 +2,7 @@
 from PySide6 import QtCore, QtWidgets, QtGui
 from PySide6.QtCore import QThreadPool, Slot, Signal
 from flipper.ui.chat_delegate import ChatDelegate
-from flipper.models.chat_model import chatModel
+from flipper.models.chat_model import ChatModel
 from PySide6.QtWidgets import QMessageBox
 
 SYSTEM_INSTRUCTION = "You are a conversational chatbot"
@@ -18,7 +18,7 @@ class ChatWidget(QtWidgets.QWidget):
         self.threadpool = QThreadPool()
 
         # Setup Model/View for chat
-        self.model = chatModel()
+        self.model = ChatModel()
         self.model.failed_message.connect(self.display_warning)
         self.list_view = QtWidgets.QListView()
         self.list_view.setModel(self.model)

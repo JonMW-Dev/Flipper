@@ -6,7 +6,7 @@ from flipper.services.chat_client import AIChatController
 class MessageRoles:
         TextRole = Qt.UserRole + 1
         AiRole = Qt.UserRole + 2
-class chatModel(QAbstractListModel):
+class ChatModel(QAbstractListModel):
     ColorRole = Qt.UserRole + 10
     failed_message = QtCore.Signal(dict)
     def __init__(self):
