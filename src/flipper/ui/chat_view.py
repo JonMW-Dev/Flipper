@@ -1,7 +1,7 @@
 # creation of my widgets to display
 from PySide6 import QtCore, QtWidgets, QtGui
 from PySide6.QtCore import QThreadPool, Slot, Signal
-from flipper.ui.chat_delegate import ChatDelegate
+from flipper.ui.delegates.chat_delegate import ChatDelegate
 from flipper.models.chat_model import ChatModel
 from PySide6.QtWidgets import QMessageBox
 

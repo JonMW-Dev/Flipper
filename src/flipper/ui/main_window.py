@@ -1,5 +1,5 @@
 from PySide6 import QtWidgets, QtCore
-from flipper.ui.ui_main_window import Ui_MainWindow
+from flipper.ui.generated.ui_main_window import Ui_MainWindow
 from flipper.ui.chat_view import ChatView
 from flipper.ui.edu_view import EduView
 from flipper.ui.config_view import ConfigView
