@@ -3,7 +3,7 @@ from PySide6 import QtWidgets, QtCore
 from PySide6.QtCore import QThreadPool, Qt, QEvent
 from PySide6.QtWidgets import QMessageBox, QButtonGroup
 from flipper.ui.ui_edu_view import Ui_eduView
-from flipper.models.edu_model import eduModel
+from flipper.models.edu_model import EduModel
 from flipper.ui.ui_question_view import Ui_questionView
 from flipper.ui.ui_test_view import Ui_testView
 from flipper.services.test_bank import TestBank
@@ -17,7 +17,7 @@ class eduView(QtWidgets.QWidget):
         self.ui = Ui_eduView()
         self.ui.setupUi(self)
         # setup List view to list added courses
-        self.model = eduModel()
+        self.model = EduModel()
         # setup course delegate
         self.ui.w_list_courseList.setItemDelegate(CourseRowDelegate(self.ui.w_list_courseList))
         self.ui.w_list_courseList.setModel(self.model)
