@@ -1,5 +1,3 @@
-import grp
-import random
 from PySide6 import QtWidgets, QtCore
 from PySide6.QtWidgets import QMessageBox
 from flipper.ui.generated.ui_edu_view import Ui_eduView
