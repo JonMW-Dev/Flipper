@@ -1,7 +1,7 @@
 
 import json
 from pathlib import Path
-from PySide6.QtCore import QObject, Signal
+from PySide6.QtCore import QObject
 from PySide6 import QtCore
 from platformdirs import user_config_dir
 from flipper.consts import APP_NAME, APP_AUTHOR, CONFIG_DEFAULTS
@@ -9,7 +9,6 @@ class ConfigService(QObject):
     saved = QtCore.Signal()
     def __init__(self):
         super().__init__()
-
         # load config
         # Setup AI configuration files
         self.saved.connect(self.refresh_config)
@@ -19,7 +18,7 @@ class ConfigService(QObject):
         self.config_file = self.config_dir / "flipper_config.json"
         self.loaded_config = self.load_settings(self.config_dir, self.config_file)
         if self.loaded_config == -1:
-            exit(1)
+            self.loaded_config = CONFIG_DEFAULTS
         print(f"Config Service: Config accessible at: {self.config_file}")
         
 
