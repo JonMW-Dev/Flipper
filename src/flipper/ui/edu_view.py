@@ -51,8 +51,11 @@ class eduView(QtWidgets.QWidget):
         widget = PanelWidget(course)
         # singleShot returns first, so the model resets after the row signal finishes.
         widget.bank_changed.connect(self.schedule_refresh)
+        widget.validation_failed.connect(self.show_validation_error)
         self.ui.w_list_courseList.setIndexWidget(index, widget)
 
+    def show_validation_error(self, message: str):
+        QMessageBox.warning(self, "validation failed", message)
     def schedule_refresh(self):
         QtCore.QTimer.singleShot(0, self.model.refresh)
 
@@ -246,6 +249,7 @@ class testView(QtWidgets.QWidget):
 
 class PanelWidget(QtWidgets.QWidget):
     bank_changed = QtCore.Signal()
+    validation_failed = QtCore.Signal()
 
     def __init__(self, course: str, parent=None):
         
@@ -375,16 +379,21 @@ class PanelWidget(QtWidgets.QWidget):
                 {"role": "system", "content": system_instruction},
                 {"role": "user", "content": qa_message}
             ]
-            response = client.send_message(prompt)
+            try: 
+                response = client.send_message(prompt)
 
-            response_msg = response.choices[0].message.content
-            if response_msg is None:
-                raise RuntimeError("Error: no response received")
+                response_msg = response.choices[0].message.content
+                if response_msg is None:
+                    raise RuntimeError("Error: no response received")
 
-            #add the false answer to f
-            print(f"AI response: {response_msg}")
-            db_service.add_false_answer(db_id, db_f, response_msg) 
-        
+                #add the false answer to f
+                print(f"AI response: {response_msg}")
+                db_service.add_false_answer(db_id, db_f, response_msg) 
+            except RuntimeError as error:
+                self.validation_failed.emit(str(error))
+                break
+
+            
         self.bank_changed.emit()
 
     #opens a test window 
