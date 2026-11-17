@@ -1,7 +1,7 @@
 # Provides the AI prompt and response services to the MainWindow
 
 from openai import OpenAI, AuthenticationError, APIError
-from flipper.services.cfg_svc import ConfigService
+from src.flipper.services.config_service import ConfigService
 from PySide6 import QtCore
 from PySide6.QtCore import QObject
 
