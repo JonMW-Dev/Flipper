@@ -114,9 +114,9 @@ class QuestionRepository:
                 SELECT id 
                 FROM questions
                 WHERE course = ?
-                AND f1 IS NOT (NULL OR f1 = '')
-                AND f2 IS NOT (NULL OR f2 = '')
-                AND f3 IS NOT (NULL OR f3 = '')
+                AND f1 IS NOT NULL AND f1 <> ''
+                AND f2 IS NOT NULL AND f2 <> ''
+                AND f3 IS NOT NULL AND f3 <> ''
                 """,
                 (course,),
             ).fetchall()
