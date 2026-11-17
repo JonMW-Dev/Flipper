@@ -72,14 +72,14 @@ class ChatModel(QAbstractListModel):
     # Runs on a pool thread. Emit the reply; the window adds it on the GUI thread.
     def request_response(self, messages, reply_ready):
         AI_service = ChatClient()
-        AI_service.failed.connect(self.remove_lastMessage)
+        AI_service.failed.connect(self.remove_last_Message)
         response = AI_service.send_message(messages)
         response_msg = response.choices[0].message.content
         if response_msg is None:
             raise RuntimeError("Error: no response received")
         reply_ready.emit({"role": "assistant", "content": response_msg}) # signal emmited, captured by view slot
         
-    def remove_lastMessage(self):
+    def remove_last_Message(self):
         self.beginInsertRows(QModelIndex(), len(self.messages), len(self.messages))
         removed_msg = self.messages.pop()
 
