@@ -8,6 +8,26 @@ class DataAccessService:
     """Reads and writes rows in the questions table."""
 
     def __init__(self, database: Path = DATABASE):
+        # check to see if databse exists, if not create it and the questions table
+        if not database.exists():
+            with sqlite3.connect(database) as conn:
+                conn.execute(
+                    """
+                    CREATE TABLE questions (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        course TEXT NOT NULL,
+                        question TEXT NOT NULL,
+                        answer TEXT NOT NULL,
+                        f1 TEXT,
+                        f2 TEXT,
+                        f3 TEXT,
+                        correct INTEGER DEFAULT 0,
+                        attempts INTEGER DEFAULT 0
+                    )
+                    """
+                )
+
+        
         self.database = database
 
     def insert(
