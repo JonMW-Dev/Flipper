@@ -20,7 +20,6 @@ class AIChatController(QObject):
         self.config_service.saved.connect(self.reload_configuration)
 
         self.reload_configuration()
-        print(f"AI client starting with: \n{self.api_key}\n{self.url}\n{self.model}")
         # Create OpenAI API client
         self.AI_client = OpenAI(
             base_url= self.url,
@@ -28,7 +27,6 @@ class AIChatController(QObject):
         )
 
     def send_message(self, messages: list[dict[str,str]]):
-        print(f"Sending to AI with: \n{self.api_key}\n{self.url}\n{self.model}")
         try: 
             return self.AI_client.chat.completions.create(
                 model = self.model,
