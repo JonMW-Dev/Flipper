@@ -61,6 +61,7 @@ class ChatWidget(QtWidgets.QWidget):
     @Slot(dict)
     def update_chat(self, message):
         self.model.add_message(message)
+        #get latest status from chat model
 
     def send_message(self):
 
@@ -85,6 +86,8 @@ class ChatWidget(QtWidgets.QWidget):
         self.threadpool.start(
             lambda: self.model.request_response(request, self.message_signal)
         )
+
+        
 
 
 

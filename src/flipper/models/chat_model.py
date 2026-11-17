@@ -1,5 +1,6 @@
 from PySide6.QtCore import QAbstractListModel, Qt, QModelIndex
 from PySide6.QtGui import QBrush, QColor
+from PySide6.QtWidgets import QMessageBox
 from flipper.services.chat_client import AIChatController
 class MessageRoles:
         TextRole = Qt.UserRole + 1
@@ -12,6 +13,7 @@ class chatModel(QAbstractListModel):
         self.messages: list[dict[str,str]] = [
             {"role":"assistant",  "content":"Hello please enter a message"},    
         ]
+
 
     def rowCount(self, parent=None):
         return len(self.messages)
@@ -68,12 +70,18 @@ class chatModel(QAbstractListModel):
     # Runs on a pool thread. Emit the reply; the window adds it on the GUI thread.
     def request_response(self, messages, reply_ready):
         AI_service = AIChatController()
+        AI_service.failed.connect(self.remove_lastMessage)
         response = AI_service.send_message(messages)
         response_msg = response.choices[0].message.content
         if response_msg is None:
             raise RuntimeError("Error: no response received")
         reply_ready.emit({"role": "assistant", "content": response_msg}) # signal emmited, captured by view slot
-            
+        
+    def remove_lastMessage(self):
+        
+        removed_msg = self.messages.pop()
+        QMessageBox.information(None, "AI Chat Failed", f"CHAT ERROR - REMOVING MESSAGE: \n\n\"{removed_msg['content']}\"")
+        print(f"removed: {removed_msg}...")
 
 
     def get_message(self):

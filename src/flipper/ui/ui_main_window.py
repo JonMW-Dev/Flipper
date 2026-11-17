@@ -19,7 +19,7 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
 from PySide6.QtWidgets import (QApplication, QHBoxLayout, QLabel, QMainWindow,
     QSizePolicy, QStackedWidget, QStatusBar, QToolBar,
     QVBoxLayout, QWidget)
-from flipper.ui import resources_rc
+from . import resources_rc
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -44,6 +44,9 @@ class Ui_MainWindow(object):
         self.actionEducation = QAction(MainWindow)
         self.actionEducation.setObjectName(u"actionEducation")
         self.actionEducation.setMenuRole(QAction.MenuRole.NoRole)
+        self.actionConfig = QAction(MainWindow)
+        self.actionConfig.setObjectName(u"actionConfig")
+        self.actionConfig.setMenuRole(QAction.MenuRole.NoRole)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.horizontalLayout = QHBoxLayout(self.centralwidget)
@@ -60,6 +63,16 @@ class Ui_MainWindow(object):
         self.verticalLayout_3.addWidget(self.homeLabel)
 
         self.viewStack.addWidget(self.homePage)
+        self.configPage = QWidget()
+        self.configPage.setObjectName(u"configPage")
+        self.verticalLayout_4 = QVBoxLayout(self.configPage)
+        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
+        self.configLabel = QLabel(self.configPage)
+        self.configLabel.setObjectName(u"configLabel")
+
+        self.verticalLayout_4.addWidget(self.configLabel)
+
+        self.viewStack.addWidget(self.configPage)
         self.chatPage = QWidget()
         self.chatPage.setObjectName(u"chatPage")
         self.verticalLayout = QVBoxLayout(self.chatPage)
@@ -96,6 +109,7 @@ class Ui_MainWindow(object):
         self.navBar.addAction(self.actionHome)
         self.navBar.addAction(self.actionChat)
         self.navBar.addAction(self.actionEducation)
+        self.navBar.addAction(self.actionConfig)
         self.navBar.addAction(self.actionQuit)
 
         self.retranslateUi(MainWindow)
@@ -112,7 +126,9 @@ class Ui_MainWindow(object):
         self.actionChat.setText(QCoreApplication.translate("MainWindow", u"Chat", None))
         self.actionQuit.setText(QCoreApplication.translate("MainWindow", u"Quit", None))
         self.actionEducation.setText(QCoreApplication.translate("MainWindow", u"Education", None))
+        self.actionConfig.setText(QCoreApplication.translate("MainWindow", u"Config", None))
         self.homeLabel.setText(QCoreApplication.translate("MainWindow", u"Home", None))
+        self.configLabel.setText(QCoreApplication.translate("MainWindow", u"Config Page ", None))
         self.chatLabel.setText(QCoreApplication.translate("MainWindow", u"Chat", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"education Page", None))
         self.navBar.setWindowTitle(QCoreApplication.translate("MainWindow", u"toolBar", None))

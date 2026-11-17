@@ -31,6 +31,17 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="configPage">
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="QLabel" name="configLabel">
+          <property name="text">
+           <string>Config Page </string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
       <widget class="QWidget" name="chatPage">
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
@@ -77,6 +88,7 @@
    <addaction name="actionHome"/>
    <addaction name="actionChat"/>
    <addaction name="actionEducation"/>
+   <addaction name="actionConfig"/>
    <addaction name="actionQuit"/>
   </widget>
   <action name="actionHome">
@@ -114,6 +126,14 @@
   <action name="actionEducation">
    <property name="text">
     <string>Education</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionConfig">
+   <property name="text">
+    <string>Config</string>
    </property>
    <property name="menuRole">
     <enum>QAction::MenuRole::NoRole</enum>

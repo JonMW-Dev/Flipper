@@ -2,6 +2,7 @@ from PySide6 import QtWidgets, QtCore
 from flipper.ui.ui_main_window import Ui_MainWindow
 from flipper.ui.chat_view import ChatWidget
 from flipper.ui.edu_view import eduView
+from flipper.ui.config_view import ConfigView
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -17,23 +18,29 @@ class MainWindow(QtWidgets.QMainWindow):
             QtWidgets.QSizePolicy.Policy.Expanding,
         )
 
-        self.ui.navBar.insertWidget(self.ui.actionQuit, spacer) #insert spacer before actionQuit
+        self.ui.navBar.insertWidget(self.ui.actionConfig, spacer) #insert spacer before actionQuit
 
         self.ui.actionHome.triggered.connect(self.show_home) # go to home
         self.ui.actionChat.triggered.connect(self.show_chat) # go to AI chat 
         self.ui.actionEducation.triggered.connect(self.show_edu) # go to Edu page
+        self.ui.actionConfig.triggered.connect(self.show_config)
         self.ui.actionQuit.triggered.connect(QtWidgets.QApplication.quit) # terminate the application
-
+        
 
         # Add the chat view
         self.chat_view = ChatWidget()
         self.ui.chatLabel.hide()
         self.ui.verticalLayout.addWidget(self.chat_view)
-
+        
+        # add the edu view
         self.edu_view = eduView()
         self.ui.label.hide()
         self.ui.verticalLayout_2.addWidget(self.edu_view)
 
+        # add the config view
+        self.config_view = ConfigView()
+        self.ui.configLabel.hide()
+        self.ui.verticalLayout_4.addWidget(self.config_view)
     def show_home(self):
         self.ui.viewStack.setCurrentWidget(self.ui.homePage)
 
@@ -42,3 +49,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def show_edu(self):
         self.ui.viewStack.setCurrentWidget(self.ui.eduPage)
+
+    def show_config(self):
+        self.ui.viewStack.setCurrentWidget(self.ui.configPage)
