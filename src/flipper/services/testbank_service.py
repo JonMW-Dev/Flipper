@@ -1,9 +1,9 @@
-from flipper.data_access.question_repository import QuestionRepository
+from flipper.data_access.data_access import DataAccessService
 
 
-class TestBank:
-    def __init__(self, questions: QuestionRepository | None = None):
-        self.questions = questions if questions is not None else QuestionRepository()
+class TestBankService:
+    def __init__(self, questions: DataAccessService | None = None):
+        self.questions = questions if questions is not None else DataAccessService()
 
     def add_question(self, course: str, question: str, answer: str) -> int:
         course = course.strip()

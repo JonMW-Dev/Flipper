@@ -4,7 +4,7 @@ from pathlib import Path
 DATABASE = Path(__file__).resolve().parents[3] / "data" / "testbank.db"
 
 
-class QuestionRepository:
+class DataAccessService:
     """Reads and writes rows in the questions table."""
 
     def __init__(self, database: Path = DATABASE):

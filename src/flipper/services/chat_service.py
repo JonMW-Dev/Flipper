@@ -8,7 +8,7 @@ from PySide6.QtCore import QObject
 from typing import cast
 
 
-class ChatClient(QObject):
+class ChatService(QObject):
     api_key = None
     url     = None
     model   = None

@@ -7,8 +7,8 @@ from flipper.ui.ui_edu_view import Ui_eduView
 from flipper.models.course_list_model import CourseListModel
 from flipper.ui.ui_question_view import Ui_questionView
 from flipper.ui.ui_test_view import Ui_testView
-from flipper.services.test_bank import TestBank
-from flipper.services.chat_client import ChatClient
+from flipper.services.testbank_service import TestBankService
+from flipper.services.chat_service import ChatService
 
 
 class EduView(QtWidgets.QWidget):
@@ -110,7 +110,7 @@ class QuestionView(QtWidgets.QWidget):
 
         # connect to test_bank service and query the db
         print("Sending query to db_service")
-        db_service = TestBank()
+        db_service = TestBankService()
         result = db_service.add_question(course, question, answer)
         print(result)
 
@@ -147,7 +147,7 @@ class TestView(QtWidgets.QWidget):
         self.current_id = None
 
         #connect to db service
-        self.db_service = TestBank()
+        self.db_service = TestBankService()
 
 
 
@@ -277,7 +277,7 @@ class PanelWidget(QtWidgets.QWidget):
         
         #setup thread pool so GUI stays responsive during db validation
         self.threadpool = QThreadPool()
-        self.db_service = TestBank()
+        self.db_service = TestBankService()
         
         # add reset score button
         btn_resetScore = QtWidgets.QPushButton("reset score")
@@ -347,7 +347,7 @@ class PanelWidget(QtWidgets.QWidget):
 
     #sends each question and answer pair to the AI to generate f1-3
     def validate_bank(self):
-        db_service = TestBank()
+        db_service = TestBankService()
         f_answer: dict[str, bool | None] = {
             "f1": None,
             "f2": None,
@@ -370,8 +370,8 @@ class PanelWidget(QtWidgets.QWidget):
             
     # to be called on a new thread - Sends messages to ai and receives responses
     def fill_missing_answers(self, pending_work: list[tuple[int, str]]):
-        db_service = TestBank()
-        client = ChatClient()
+        db_service = TestBankService()
+        client = ChatService()
 
         # call the AI to fill in the missing f's
         for task in pending_work:
