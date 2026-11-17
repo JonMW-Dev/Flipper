@@ -1,7 +1,7 @@
 from PySide6 import QtWidgets, QtCore
 from flipper.ui.ui_main_window import Ui_MainWindow
 from flipper.ui.chat_view import ChatView
-from flipper.ui.edu_view import eduView
+from flipper.ui.edu_view import EduView
 from flipper.ui.config_view import ConfigView
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -33,7 +33,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.verticalLayout.addWidget(self.chat_view)
         
         # add the edu view
-        self.edu_view = eduView()
+        self.edu_view = EduView()
         self.ui.label.hide()
         self.ui.verticalLayout_2.addWidget(self.edu_view)
 

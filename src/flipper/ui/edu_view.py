@@ -10,7 +10,7 @@ from flipper.services.test_bank import TestBank
 from flipper.services.chat_client import AIChatController
 
 
-class eduView(QtWidgets.QWidget):
+class EduView(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
         # setup GUI 
