@@ -120,7 +120,7 @@ class QuestionView(QtWidgets.QWidget):
     def done(self):
         self.saved.emit()
 
-class testView(QtWidgets.QWidget):
+class TestView(QtWidgets.QWidget):
     test_completed = QtCore.Signal()
     def __init__(self, questions: list[int]):
         super().__init__()
@@ -405,7 +405,7 @@ class PanelWidget(QtWidgets.QWidget):
         print(f"List of valid id's: {valid_questions}")
 
         #create test_view
-        self.test_window = testView(valid_questions)
+        self.test_window = TestView(valid_questions)
         self.test_window.test_completed.connect(self.test_completed)
         # self.bank_changed.emit()
         self.test_window.show()
