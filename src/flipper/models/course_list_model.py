@@ -1,6 +1,6 @@
 from PySide6.QtCore import QAbstractListModel, Qt, QModelIndex
 import PySide6.QtCore
-class EduModel(QAbstractListModel):
+class CourseListModel(QAbstractListModel):
     def __init__(self):
         super().__init__()
 
