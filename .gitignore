@@ -9,6 +9,7 @@ wheels/
 *.db
 *.env.save
 flipper_config.json
+courselist.txt
 
 # Virtual environments
 .venv
