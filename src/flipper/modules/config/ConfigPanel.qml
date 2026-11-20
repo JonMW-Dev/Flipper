@@ -10,7 +10,7 @@ Rectangle {
     width: 517
 
     clip: true
-    color: "#ffffff"
+    color: palette.window
 
     Text {
         id: apiKeyLabel
@@ -23,7 +23,7 @@ Rectangle {
         anchors.top: parent.top
         anchors.topMargin: 10
 
-        color: "#000000"
+        color: palette.windowText
         font.family: "Inter"
         font.pixelSize: 12
         font.weight: Font.Normal
@@ -34,6 +34,7 @@ Rectangle {
     }
     TextField {
         id: apiKeyField
+
 
         anchors.left: parent.left
         anchors.right: parent.right
@@ -59,7 +60,7 @@ Rectangle {
         anchors.top: parent.top
         anchors.topMargin: 79
 
-        color: "#000000"
+        color: palette.windowText
         font.family: "Inter"
         font.pixelSize: 12
         font.weight: Font.Normal
@@ -95,7 +96,7 @@ Rectangle {
         anchors.top: parent.top
         anchors.topMargin: 150
 
-        color: "#000000"
+        color: palette.windowText
         font.family: "Inter"
         font.pixelSize: 12
         font.weight: Font.Normal
@@ -131,7 +132,7 @@ Rectangle {
         anchors.top: parent.top
         anchors.topMargin: 219
 
-        color: "#000000"
+        color: palette.windowText
         font.family: "Inter"
         font.pixelSize: 12
         font.weight: Font.Normal
