@@ -1,17 +1,18 @@
 from PySide6 import QtCore, QtWidgets
 from PySide6.QtWidgets import QMessageBox, QButtonGroup
-from flipper.ui.generated.ui_test_view import Ui_testView
-from flipper.services.testbank_service import TestBankService
+from .ui_test_view import Ui_testView
 import random
 
 class TestView(QtWidgets.QWidget):
     test_completed = QtCore.Signal()
-    def __init__(self, questions: list[int]):
+    def __init__(self, questions: list[int], testbank_service):
         super().__init__()
         #setup gui window
         self.ui = Ui_testView()
         self.ui.setupUi(self)
         completed = QtCore.Signal()
+
+        self.testbank_service = testbank_service
 
         # group radio buttons
         self.grp_answers = QButtonGroup()
@@ -27,10 +28,7 @@ class TestView(QtWidgets.QWidget):
         self.total_correct_answers = 0
         self.current_id = None
 
-        #connect to db service
-        self.db_service = TestBankService()
-
-
+        
 
         #Display question
         print(f"Question list from testView: {self.question_list}")
@@ -51,19 +49,17 @@ class TestView(QtWidgets.QWidget):
     def display_question(self, id: int):
         #set current_id variable to id
         self.current_id = id
-        #get question data
-        data_tuple = self.db_service.get_row(self.current_id)
-        
-        #display question data on window
-        if data_tuple is None:
+        record = self.testbank_service.get_record(self.current_id)
+        if record is None:
             raise RuntimeError(f"Error: no data found for id {self.current_id}")
-        
-        self.ui.lbl_question.setText(data_tuple[2])
-        answer_choices: list[str] = []
-        answer_choices.append(data_tuple[3])
-        answer_choices.append(data_tuple[4])
-        answer_choices.append(data_tuple[5])
-        answer_choices.append(data_tuple[6])
+
+        self.ui.lbl_question.setText(record["question"])
+        answer_choices: list[str] = [
+            record["answer"] or "",
+            record["f1"] or "",
+            record["f2"] or "",
+            record["f3"] or "",
+        ]
 
         # scramble the questions
         answer_scrambled: list[str] = []
@@ -87,23 +83,14 @@ class TestView(QtWidgets.QWidget):
         
         selected_answer = checked_button.text()
 
-        data_tuple = ()
         if selected_answer and self.current_id:
-            data_tuple = self.db_service.get_row(self.current_id)
-            if data_tuple is None:
+            record = self.testbank_service.get_record(self.current_id)
+            if record is None:
                 raise RuntimeError(f"Error: no data found for id {self.current_id}")
-            
-            correct_answer = data_tuple[3]
 
-            if data_tuple[7] == None:
-                data_correct = 0
-            else:
-                data_correct = data_tuple[7]
-
-            if data_tuple[8] == None:
-                data_attempt = 0
-            else:
-                data_attempt = data_tuple[8]
+            correct_answer = record["answer"]
+            data_correct = record["correct"] or 0
+            data_attempt = record["attempts"] or 0
             
             
             print(f"Selected Answer: {selected_answer} | Correct Answer: {correct_answer}")
@@ -112,12 +99,12 @@ class TestView(QtWidgets.QWidget):
                 
                 data_correct += 1
                 print(f"Updating {self.current_id} correct col with: {data_correct}")
-                self.db_service.add_data(self.current_id, "correct", data_correct)
+                self.testbank_service.update_data(self.current_id, "correct", data_correct)
 
             # update attempt count
             data_attempt += 1
             print(f"Updating {self.current_id} attempts col with: {data_attempt}")
-            self.db_service.add_data(self.current_id, "attempts", data_attempt)
+            self.testbank_service.update_data(self.current_id, "attempts", data_attempt)
 
 
         #deselect radio buttons

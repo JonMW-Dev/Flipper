@@ -1,6 +1,7 @@
-from PySide6.QtCore import QAbstractListModel, Qt, QModelIndex
-from PySide6 import QtCore
-from PySide6.QtGui import QBrush, QColor
+from threading import Lock
+
+from PySide6.QtCore import QAbstractListModel, Qt, QModelIndex, Signal
+from PySide6.QtGui import QColor
 
 from flipper.services.chat_service import ChatService
 class MessageRoles:
@@ -8,9 +9,16 @@ class MessageRoles:
         AiRole = Qt.ItemDataRole.UserRole + 2
 class ChatModel(QAbstractListModel):
     ColorRole = Qt.ItemDataRole.UserRole + 10
-    failed_message = QtCore.Signal(dict)
-    def __init__(self):
+    failed_message = Signal(dict)
+    def __init__(self, chat_service):
         super().__init__()
+        self.chat_service = chat_service
+
+        # One subscription. Connecting inside request_response stacked a removal per send.
+        self._pending_replies = 0
+        self._pending_lock = Lock()
+        self.chat_service.reply_ready.connect(self.add_message)
+        self.chat_service.failed.connect(self.remove_last_Message)
 
         self.messages: list[dict[str,str]] = [
             {"role":"assistant",  "content":"Hello please enter a message"},    
@@ -37,12 +45,6 @@ class ChatModel(QAbstractListModel):
                 return "Bot: " + text
             return str(msg)
         
-        # if role == MessageRoles.TextRole:
-        #     return msg["user"]
-
-        # if role == MessageRoles.AiRole:
-        #      return msg["AI"]
-
         # Alignment
         if role == Qt.ItemDataRole.TextAlignmentRole:
             if is_user:
@@ -69,21 +71,39 @@ class ChatModel(QAbstractListModel):
         self.messages.append(message)
         self.endInsertRows()
 
+    def _add_pending(self):
+        with self._pending_lock:
+            self._pending_replies += 1
+
+    def _take_pending(self) -> bool:
+        with self._pending_lock:
+            if self._pending_replies <= 0:
+                return False
+            self._pending_replies -= 1
+            return True
+
     # Runs on a pool thread. Emit the reply; the window adds it on the GUI thread.
-    def request_response(self, messages, reply_ready):
-        AI_service = ChatService()
-        AI_service.failed.connect(self.remove_last_Message)
-        response = AI_service.send_message(messages)
+    def request_response(self, messages):
+        self._add_pending()
+        try:
+            response = self.chat_service.send_message(messages)
+        except RuntimeError:
+            return
         response_msg = response.choices[0].message.content
         if response_msg is None:
-            raise RuntimeError("Error: no response received")
-        reply_ready.emit({"role": "assistant", "content": response_msg}) # signal emmited, captured by view slot
+            self.chat_service.failed.emit()
+            return
+        # This request succeeded, so a later failure must not remove its row.
+        self._take_pending()
+        self.chat_service.reply_ready.emit({"role": "assistant", "content": response_msg})
         
     def remove_last_Message(self):
-        self.beginInsertRows(QModelIndex(), len(self.messages), len(self.messages))
+        if not self._take_pending() or not self.messages:
+            return
+        row = len(self.messages) - 1
+        self.beginRemoveRows(QModelIndex(), row, row)
         removed_msg = self.messages.pop()
-
-        self.endInsertRows()
+        self.endRemoveRows()
         self.failed_message.emit(removed_msg)
 
 

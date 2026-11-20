@@ -27,6 +27,9 @@
           <property name="text">
            <string>Home</string>
           </property>
+          <property name="visible">
+           <bool>false</bool>
+          </property>
          </widget>
         </item>
        </layout>
@@ -37,6 +40,9 @@
          <widget class="QLabel" name="configLabel">
           <property name="text">
            <string>Config Page </string>
+          </property>
+          <property name="visible">
+           <bool>false</bool>
           </property>
          </widget>
         </item>
@@ -49,6 +55,9 @@
           <property name="text">
            <string>Chat</string>
           </property>
+          <property name="visible">
+           <bool>false</bool>
+          </property>
          </widget>
         </item>
        </layout>
@@ -59,6 +68,9 @@
          <widget class="QLabel" name="label">
           <property name="text">
            <string>education Page</string>
+          </property>
+          <property name="visible">
+           <bool>false</bool>
           </property>
          </widget>
         </item>

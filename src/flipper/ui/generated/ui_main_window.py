@@ -59,6 +59,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.homeLabel = QLabel(self.homePage)
         self.homeLabel.setObjectName(u"homeLabel")
+        self.homeLabel.setVisible(False)
 
         self.verticalLayout_3.addWidget(self.homeLabel)
 
@@ -69,6 +70,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.configLabel = QLabel(self.configPage)
         self.configLabel.setObjectName(u"configLabel")
+        self.configLabel.setVisible(False)
 
         self.verticalLayout_4.addWidget(self.configLabel)
 
@@ -79,6 +81,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.chatLabel = QLabel(self.chatPage)
         self.chatLabel.setObjectName(u"chatLabel")
+        self.chatLabel.setVisible(False)
 
         self.verticalLayout.addWidget(self.chatLabel)
 
@@ -89,6 +92,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.label = QLabel(self.eduPage)
         self.label.setObjectName(u"label")
+        self.label.setVisible(False)
 
         self.verticalLayout_2.addWidget(self.label)
 

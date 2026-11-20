@@ -1,15 +1,16 @@
 from PySide6 import QtCore, QtWidgets
 from PySide6.QtCore import QEvent, Qt
-from flipper.ui.generated.ui_question_view import Ui_questionView
-from flipper.services.testbank_service import TestBankService
+from .ui_question_view import Ui_questionView
 
 class QuestionView(QtWidgets.QWidget):
     saved = QtCore.Signal()
 
-    def __init__(self):
+    def __init__(self, testbank_service):
         super().__init__()
         self.ui = Ui_questionView()
         self.ui.setupUi(self)
+
+        self.testbank_service = testbank_service
 
         #setup EventFilter to allow for easier QnA entry
         self.ui.text_question.installEventFilter(self)
@@ -44,7 +45,8 @@ class QuestionView(QtWidgets.QWidget):
 
         # connect to test_bank service and query the db
         print("Sending query to db_service")
-        db_service = TestBankService()
+        db_service = self.testbank_service
+        print(f"QuestionView: Adding Q: [{question}] and A: [{answer}]")
         result = db_service.add_question(course, question, answer)
         print(result)
 

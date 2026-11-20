@@ -3,7 +3,7 @@
 
 import sys
 from PySide6 import QtWidgets
-from flipper.ui.main_window import MainWindow
+from flipper.main_window import MainWindow
 def main():
     application = QtWidgets.QApplication([])
 

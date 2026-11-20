@@ -1,11 +1,19 @@
+from os import path
+
 from PySide6.QtCore import QAbstractListModel, Qt, QModelIndex
-import PySide6.QtCore
+from flipper.data_access.data_access import DataAccessService
+
+
 class CourseListModel(QAbstractListModel):
     def __init__(self):
         super().__init__()
 
-        # Read courses from courselist.txt
+        self.course_db_service = DataAccessService("education.db", "courses")       
+        print("Course Model: Reading course data from courses table")
         self.courses = self.read_courselist()
+        if len(self.courses) == 0:
+            print(f"Course Model: the courses table has no courses")
+        
 
     def rowCount(self, parent=None):
         return len(self.courses)
@@ -29,34 +37,22 @@ class CourseListModel(QAbstractListModel):
         print(f"Updated Course List: {self.courses}")
         print(f"Updating course list")
 
-        #save list to txt file
-        try:
-            with open("courselist.txt", "w") as fw:
-                for course in self.courses:
-                    fw.write(f"{course}\n")
-
-            fw.close()
-        except:
-            raise Exception("Error: Could not save course list to file")
+        self.course_db_service.insert({"course": course_name})
 
     def refresh(self):
         self.beginResetModel()
         self.courses = self.read_courselist()
         self.endResetModel()
 
+
     def read_courselist(self) -> list[str]:
         new_courses: list[str] = []
-        try:
-            with open("data/courselist.txt", "r") as fr:
-                for line in fr:
-                    line = line.strip()
-                    if not line:
-                        continue
-                    new_courses.append(line)
-            fr.close()
-            return new_courses
-        except:
-            raise OSError("Error opening course_list.txt")
+        courses_data = self.course_db_service.get_all()
+        for row in courses_data:
+            if row["course"] not in new_courses:
+                new_courses.append(row["course"])
+
+        return new_courses
         
         
 
