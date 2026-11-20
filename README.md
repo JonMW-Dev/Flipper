@@ -3,7 +3,7 @@ Flipper (name and repo will change) is a study tool that helps the user understa
 # IMPORTANT NOTES  
   - ~~While the flow of the project is in place and works, it requires additional setup after cloning. (e.g. setting up the database and llm)~~
   - LLM connection can now be configured in the config page and the databases are generated in the application data location (different as per OS)
-  - There are many GUI problems, these are currently low priority.
+  - There are ~~many~~ GUI problems, now that the refactor has increased modularity (and modifiability) I can begin transitioning the GUI to use QML instead of Widgets. (allowing me to use Figma to create a GUI and convert to QML).
   - There is currently no backup or exporting of the DB - if something goes wrong, there is no way of getting your questions and answers back
   - ~~The LLM is used via OpenRouter (hard coded) and the api_key must be given in a `.env` file with the variable name `OR_API_KEY`.~~
   
