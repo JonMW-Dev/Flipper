@@ -25,17 +25,11 @@ class MainController():
         self.chat_service = ChatService(self.current_config)
         self.edu_module     = EduModule(data_services["courses"], data_services["testbank"], self.chat_service)
         
-
-
-
-
-
-
         # Creates Modules
         self.chat_module = ChatModule(self.chat_service)
 
         # connect config update signal
-        self.config_module.config_panel.updated.connect(self.update_config)
+        self.config_module.config_model.updated.connect(self.update_config)
 
     def get_chat_panel(self):
         return  self.chat_module.get_chat_panel()
@@ -48,7 +42,6 @@ class MainController():
     
     def update_config(self):
         new_config = self.config_module.get_current_config()
-        self.current_config.clear()
         self.current_config.update(new_config)
         self.chat_service.reload_configuration()
     
