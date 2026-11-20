@@ -1,4 +1,4 @@
-from PySide6.QtCore import QObject, Signal, Property
+from PySide6.QtCore import QObject, Signal, Property, Slot
 from PySide6 import QtCore
 from datetime import datetime
 
@@ -107,7 +107,11 @@ class ConfigModel(QObject):
 
             return result
 
+    @Slot() # this allows the qml files to see the functions we call in them
     def save_config(self):
+
+        if self.api_key == None or self.api_key == '':
+            self.api_key = "local"
          
         data: dict = {
             "api_key": self.api_key,

@@ -1,0 +1,10 @@
+import QmlProject
+
+Project {
+    mainFile: "ConfigPanel.qml"
+    qt6Project: true
+
+    QmlFiles {
+        files: ["ConfigPanel.qml"]
+    }
+}
