@@ -2,14 +2,22 @@
 # Build on a Mac, from the repo root:
 #   pyinstaller --noconfirm packaging/flipper.spec
 
+from pathlib import Path
+
 from PyInstaller.utils.hooks import collect_all
 
+# Paths in a spec are relative to this file, which lives in packaging/.
+root = Path(SPECPATH).resolve().parent
+
 datas, binaries, hiddenimports = collect_all("PySide6")
-datas += [("src/flipper/modules/config/ConfigPanel.qml", "flipper/modules/config")]
+datas += [(
+    str(root / "src/flipper/modules/config/ConfigPanel.qml"),
+    "flipper/modules/config",
+)]
 
 a = Analysis(
-    ["src/flipper/app.py"],
-    pathex=["src"],
+    [str(root / "src/flipper/app.py")],
+    pathex=[str(root / "src")],
     binaries=binaries,
     datas=datas,
     hiddenimports=hiddenimports,
